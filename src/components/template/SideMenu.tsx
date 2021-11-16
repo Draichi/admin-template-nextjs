@@ -13,9 +13,9 @@ export default function SideMenu() {
     >
       <div
         className={`
-      flex flex-col items-center justify-center
-      bg-gradient-to-r from-indigo-500 to-purple-800
-      h-20 w-20
+        flex flex-col items-center justify-center
+        bg-gradient-to-r from-indigo-500 to-purple-800
+        h-20 w-20
       `}
       >
         <Logo />
