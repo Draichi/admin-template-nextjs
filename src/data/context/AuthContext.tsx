@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   getRedirectResult,
   onIdTokenChanged,
+  signOut,
   User as FirebaseUser,
 } from "firebase/auth";
 import Cookies from "js-cookie";
@@ -16,6 +17,7 @@ import route from "next/router";
 interface AuthContextProps {
   user?: User;
   loginGoogle?: () => Promise<void>;
+  logout?: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -49,6 +51,10 @@ export function AuthProvider(props) {
   const auth = getAuth(firebaseApp);
 
   useEffect(() => {
+    if (!Cookies.get("admin-template-auth-logged")) {
+      return;
+    }
+
     const cancel = onIdTokenChanged(auth, setupSession);
 
     return () => cancel();
@@ -72,19 +78,32 @@ export function AuthProvider(props) {
   }
 
   async function loginGoogle() {
-    const provider = new GoogleAuthProvider();
-
     try {
+      setLoading(true);
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const userFromFirebase = result.user;
       setupSession(userFromFirebase);
       route.push("/");
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
+  async function logout() {
+    try {
+      setLoading(true);
+      await signOut(auth);
+      await setupSession(null);
+      route.push("/auth");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loginGoogle }}>
+    <AuthContext.Provider value={{ user, loginGoogle, logout }}>
       {props.children}
     </AuthContext.Provider>
   );
