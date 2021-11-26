@@ -28,13 +28,11 @@ export default function Auth() {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="hidden md:block md:w-1/2 lg:w-2/3">
-        {/* eslint-disable */}
         <img
           src="https://source.unsplash.com/random"
           alt="Authentication page image"
           className="h-screen w-full object-cover"
         />
-        {/* eslint-enable */}
       </div>
       <div className="m-10 w-full md:w-1/2 lg:w-1/3">
         <h1
