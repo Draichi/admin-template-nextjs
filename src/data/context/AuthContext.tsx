@@ -16,6 +16,7 @@ import route from "next/router";
 
 interface AuthContextProps {
   user?: User;
+  loading?: boolean;
   loginGoogle?: () => Promise<void>;
   logout?: () => Promise<void>;
 }
@@ -52,6 +53,7 @@ export function AuthProvider(props) {
 
   useEffect(() => {
     if (!Cookies.get("admin-template-auth-logged")) {
+      setLoading(false)
       return;
     }
 
@@ -103,7 +105,7 @@ export function AuthProvider(props) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loginGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loginGoogle, logout, loading }}>
       {props.children}
     </AuthContext.Provider>
   );
