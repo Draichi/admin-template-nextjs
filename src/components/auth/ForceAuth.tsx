@@ -1,4 +1,5 @@
 import useAuth from "data/hook/useAuth"
+import Head from 'next/head'
 import Image from "next/image"
 import router from "next/router"
 import spinner from '../../../public/loading.svg'
@@ -8,6 +9,15 @@ export default function ForceAuth(props) {
     function renderContent() {
         return (
             <>
+                <Head>
+                    <script dangerouslySetInnerHTML={{
+                        __html: `
+                            if(!document.cookie?.includes('admin-template-auth-logged')) {
+                                window.location.href = '/auth'
+                            }
+                        `
+                    }}/>
+                </Head>
                 {props.children}
             </>
         )
