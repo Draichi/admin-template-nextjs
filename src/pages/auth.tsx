@@ -5,7 +5,7 @@ import { IconWarn } from "components/icons";
 import useAuth from "data/hook/useAuth";
 
 export default function Auth() {
-  const { user, loginGoogle } = useAuth();
+  const { login, signup, loginGoogle } = useAuth();
   const [error, setError] = useState(null);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -18,11 +18,15 @@ export default function Auth() {
     }, timeInSeconds * 1000);
   };
 
-  const submit = () => {
-    if (mode === "login") {
-      //
-    } else {
-      //
+  const submit = async () => {
+    try {
+      if (mode === "login") {
+        await login(email, password);
+      } else {
+        await signup(email, password);
+      }
+    } catch (error) {
+      showError(error?.message ?? "Error");
     }
   };
   return (
@@ -87,8 +91,6 @@ export default function Auth() {
         >
           Enter with google
         </button>
-
-        {user && user.name}
 
         {mode === "login" ? (
           <p className="mt-8">

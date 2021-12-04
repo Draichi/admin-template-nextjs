@@ -1,9 +1,9 @@
 import {
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   getAuth,
-  signInWithRedirect,
   signInWithPopup,
-  getRedirectResult,
   onIdTokenChanged,
   signOut,
   User as FirebaseUser,
@@ -17,6 +17,8 @@ import route from "next/router";
 interface AuthContextProps {
   user?: User;
   loading?: boolean;
+  login?: (email: string, password: string) => Promise<void>;
+  signup?: (email: string, password: string) => Promise<void>;
   loginGoogle?: () => Promise<void>;
   logout?: () => Promise<void>;
 }
@@ -53,7 +55,7 @@ export function AuthProvider(props) {
 
   useEffect(() => {
     if (!Cookies.get("admin-template-auth-logged")) {
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
@@ -79,16 +81,43 @@ export function AuthProvider(props) {
     }
   }
 
+  async function login(email, password) {
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(userCredential);
+      await setupSession(userCredential.user);
+      route.push("/");
+    } finally {
+      setLoading(false);
+    }
+  }
+  async function signup(email, password) {
+    try {
+      setLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await setupSession(userCredential.user);
+      route.push("/");
+    } finally {
+      setLoading(false);
+    }
+  }
   async function loginGoogle() {
     try {
       setLoading(true);
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const userFromFirebase = result.user;
-      setupSession(userFromFirebase);
+      await setupSession(userFromFirebase);
       route.push("/");
-    } catch (error) {
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -105,7 +134,9 @@ export function AuthProvider(props) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loginGoogle, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, loginGoogle, logout, loading, login, signup }}
+    >
       {props.children}
     </AuthContext.Provider>
   );
