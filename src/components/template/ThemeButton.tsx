@@ -1,7 +1,7 @@
 import { IconSun, IconMoon } from "components/icons";
 
 interface ThemeButtonProps {
-  theme?: "dark" | "";
+  theme?: string;
   updateTheme?: () => void;
 }
 
